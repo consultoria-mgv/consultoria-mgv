@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auditor NOM-035 con IA | MGV Consultoría</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#F8FAFC;color:#222;min-height:100vh}
+.hidden{display:none!important}
+button{cursor:pointer;font-family:inherit}
+input,select{font-family:inherit}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.fade{animation:fadeIn .35s ease}
+.hdr{background:#0F2D5C;color:#fff;padding:24px 20px 20px}
+.hdr-inner{max-width:640px;margin:0 auto}
+.hdr-badge{display:flex;align-items:center;gap:9px;margin-bottom:14px}
+.hdr-icon{background:rgba(255,255,255,.15);border-radius:8px;padding:7px 10px;font-size:18px}
+.hdr-meta{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+.hdr h1{font-size:24px;font-weight:700;margin-bottom:5px;letter-spacing:-.4px}
+.hdr h1 span{color:#93C5FD}
+.hdr p{font-size:13px;color:rgba(255,255,255,.65);line-height:1.6}
+.prog-wrap{max-width:640px;margin:0 auto}
+.prog-secs{display:flex;gap:3px;margin-bottom:10px}
+.prog-sec{flex:1;height:3px;border-radius:99px;background:rgba(255,255,255,.2);transition:background .3s}
+.prog-sec.done{background:#93C5FD}
+.prog-sec.active{background:#fff}
+.prog-info{display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.55);margin-bottom:8px}
+.prog-titulo{display:flex;align-items:center;gap:8px}
+.body{max-width:640px;margin:0 auto;padding:20px 18px 40px}
+.card{background:#fff;border:1px solid #E2E8F0;border-radius:14px;padding:18px 20px;margin-bottom:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px}
+.g3-item{background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:13px 11px;text-align:center}
+.g3-icon{font-size:18px;margin-bottom:5px}
+.g3-t{font-size:12px;font-weight:600;color:#0F2D5C;margin-bottom:2px}
+.g3-s{font-size:11px;color:#64748B;line-height:1.4}
+.alert-r{background:#FEE2E2;border:1px solid #FECACA;border-radius:12px;padding:12px 16px;margin-bottom:16px;display:flex;gap:10px}
+.alert-r-t{font-size:13px;font-weight:600;color:#991B1B;margin-bottom:2px}
+.alert-r-s{font-size:12px;color:#7F1D1D;line-height:1.5}
+.sec-list-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #F1F5F9}
+.sec-list-item:last-child{border-bottom:none}
+.sec-list-item .cnt{margin-left:auto;font-size:11px;color:#64748B}
+.btn-primary{width:100%;background:#0F2D5C;color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:600}
+.btn-primary:disabled{background:#E2E8F0;color:#94A3B8;cursor:not-allowed}
+.btn-secondary{width:100%;background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:11px;font-size:13px;color:#64748B;margin-top:8px}
+.preg-card{background:#fff;border:1px solid #E2E8F0;border-radius:14px;padding:17px 19px;margin-bottom:11px}
+.preg-num{color:#1B4F8A;font-weight:700;margin-right:5px}
+.preg-texto{font-size:14px;font-weight:500;color:#1E293B;margin-bottom:12px;line-height:1.5}
+.preg-input{width:100%;padding:10px 13px;border:1px solid #E2E8F0;border-radius:8px;font-size:14px;outline:none}
+.preg-input:focus{border-color:#1B4F8A}
+.preg-select{width:100%;padding:10px 13px;border:1px solid #E2E8F0;border-radius:8px;font-size:14px;background:#fff}
+.radio-opt{display:flex;align-items:center;gap:10px;padding:9px 13px;margin-bottom:6px;border:1.5px solid #E2E8F0;border-radius:8px;cursor:pointer;user-select:none;transition:all .1s}
+.radio-opt.sel{border-color:#1B4F8A;background:#E8F0FB}
+.radio-dot{width:17px;height:17px;border-radius:50%;border:2px solid #CBD5E1;background:#fff;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.radio-opt.sel .radio-dot{background:#1B4F8A;border-color:#1B4F8A}
+.radio-inner{width:6px;height:6px;border-radius:50%;background:#fff;display:none}
+.radio-opt.sel .radio-inner{display:block}
+.radio-label{font-size:13px;color:#475569}
+.radio-opt.sel .radio-label{color:#0F2D5C}
+#screen-procesando{background:#0F2D5C;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px}
+.spinner{width:50px;height:50px;border:3px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:24px}
+.proc-step{font-size:12px;padding:6px 14px;border-radius:99px;text-align:center;transition:all .4s}
+.proc-step.active{background:rgba(255,255,255,.2);color:#fff}
+.proc-step.done{background:rgba(255,255,255,.1);color:rgba(255,255,255,.5);text-decoration:line-through}
+.proc-step.pending{color:rgba(255,255,255,.3)}
+.proc-steps{margin-top:24px;display:flex;flex-direction:column;gap:8px;width:100%;max-width:360px}
+.barra-wrap{width:100%;background:#E2E8F0;border-radius:99px;height:9px;overflow:hidden}
+.barra-fill{height:100%;border-radius:99px;transition:width 1.2s ease}
+.nivel-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:99px;margin:10px 0 14px;font-size:13px;font-weight:600}
+.sec-titulo-rep{font-size:11px;font-weight:600;color:#0F2D5C;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.hallazgo{display:flex;gap:8px;margin-bottom:8px;font-size:13px;color:#7F1D1D;line-height:1.5}
+.fortaleza{display:flex;gap:8px;margin-bottom:8px;font-size:13px;color:#064E3B;line-height:1.5}
+.accion-item{border:1px solid #E2E8F0;border-radius:10px;padding:12px 14px;margin-bottom:9px}
+.accion-item:last-child{margin-bottom:0}
+.prio-badge{font-size:10px;font-weight:700;padding:2px 9px;border-radius:99px}
+.cta-box{background:#0F2D5C;border-radius:14px;padding:20px 22px;text-align:center;margin-bottom:14px}
+.cta-btn{display:inline-block;background:#fff;color:#0F2D5C;padding:9px 20px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none}
+.rep-btns{display:flex;gap:10px;margin-bottom:20px}
+.rep-btns button{flex:1;padding:12px;border-radius:10px;font-size:13px;font-weight:600;border:none}
+@media print{.no-print{display:none!important}}
+</style>
+</head>
+<body>
+
+<!-- SCREEN INICIO -->
+<div id="screen-inicio" class="hidden">
+  <div class="hdr">
+    <div class="hdr-inner">
+      <div class="hdr-badge">
+        <div class="hdr-icon">⚖️</div>
+        <div><div class="hdr-meta">MGV Consultoría e Ingeniería</div><div style="font-size:10px;color:rgba(255,255,255,.4)">Herramienta profesional SHMA</div></div>
+      </div>
+      <h1>Auditor NOM-035 <span>con IA</span></h1>
+      <p>Diagnóstico automatizado · Reporte profesional · Plan de acción · ~8 minutos</p>
+    </div>
+  </div>
+  <div class="body">
+    <div class="g3">
+      <div class="g3-item"><div class="g3-icon">📋</div><div class="g3-t">6 secciones</div><div class="g3-s">Auditoría NOM-035 completa</div></div>
+      <div class="g3-item"><div class="g3-icon">🤖</div><div class="g3-t">IA gratuita</div><div class="g3-s">Análisis y recomendaciones</div></div>
+      <div class="g3-item"><div class="g3-icon">📄</div><div class="g3-t">Reporte PDF</div><div class="g3-s">Listo para la STPS</div></div>
+    </div>
+    <div class="alert-r">
+      <span style="font-size:17px;flex-shrink:0">🚨</span>
+      <div><div class="alert-r-t">Multa hasta $480,000 MXN por centro de trabajo</div><div class="alert-r-s">La STPS intensificó inspecciones. Esta auditoría toma 8 min y puede ahorrarte una sanción millonaria.</div></div>
+    </div>
+    <div class="card">
+      <div style="font-size:11px;font-weight:600;color:#0F2D5C;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px">Esta auditoría evalúa</div>
+      <div id="sec-list"></div>
+    </div>
+    <button class="btn-primary" onclick="irAPaso(1)">Iniciar auditoría gratuita →</button>
+    <div style="text-align:center;font-size:11px;color:#94A3B8;margin-top:10px">MGV Consultoría e Ingeniería · 100% gratuito</div>
+  </div>
+</div>
+
+<!-- SCREEN PREGUNTAS -->
+<div id="screen-preguntas" class="hidden">
+  <div class="hdr">
+    <div class="hdr-inner">
+      <div class="prog-wrap">
+        <div class="prog-info"><span id="prog-label-sec">Sección 1 de 6</span><span id="prog-label-pct"></span></div>
+        <div class="prog-secs" id="prog-secs"></div>
+        <div class="prog-titulo">
+          <span style="font-size:18px" id="prog-icon"></span>
+          <div><div style="font-size:15px;font-weight:600" id="prog-titulo-texto"></div><div style="font-size:11px;color:rgba(255,255,255,.5)" id="prog-pregs-cnt"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="body">
+    <div id="preguntas-container"></div>
+    <button class="btn-primary" id="btn-siguiente" onclick="siguiente()" disabled>Cargando…</button>
+    <button class="btn-secondary" id="btn-anterior" onclick="anterior()">← Sección anterior</button>
+  </div>
+</div>
+
+<!-- SCREEN PROCESANDO -->
+<div id="screen-procesando" class="hidden">
+  <div class="spinner"></div>
+  <div style="font-size:18px;color:#fff;font-weight:600;margin-bottom:8px;text-align:center">Generando tu reporte con IA</div>
+  <div id="proc-sub" style="font-size:13px;color:rgba(255,255,255,.6);text-align:center;line-height:1.6">Analizando respuestas…</div>
+  <div class="proc-steps" id="proc-steps"></div>
+</div>
+
+<!-- SCREEN REPORTE -->
+<div id="screen-reporte" class="hidden fade">
+  <div class="hdr">
+    <div style="max-width:640px;margin:0 auto">
+      <div style="font-size:10px;color:rgba(255,255,255,.5);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px">Reporte NOM-035-STPS-2018</div>
+      <div style="font-size:19px;font-weight:700;margin-bottom:2px" id="rep-empresa">—</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.5)" id="rep-fecha">—</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="card" style="text-align:center;padding:22px">
+      <div style="font-size:11px;color:#64748B;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Nivel de cumplimiento global</div>
+      <div style="font-size:58px;font-weight:700;line-height:1" id="rep-score-num">—</div>
+      <div class="nivel-badge" id="rep-nivel-badge">—</div>
+      <div class="barra-wrap"><div class="barra-fill" id="rep-barra-global"></div></div>
+    </div>
+    <div class="card"><div class="sec-titulo-rep">Resultados por sección</div><div id="rep-secciones"></div></div>
+    <div class="card" style="background:#E8F0FB;border-color:#BFDBFE"><div class="sec-titulo-rep">Resumen ejecutivo</div><p style="font-size:13px;color:#1E3A5F;line-height:1.7" id="rep-resumen">—</p></div>
+    <div class="card" id="rep-hallazgos-card" style="background:#FEE2E2;border-color:#FECACA"><div class="sec-titulo-rep" style="color:#991B1B">🚨 Hallazgos críticos</div><div id="rep-hallazgos"></div></div>
+    <div class="card" id="rep-fortalezas-card" style="background:#E6F5ED;border-color:#A7F3D0"><div class="sec-titulo-rep" style="color:#0B6B3A">✅ Fortalezas identificadas</div><div id="rep-fortalezas"></div></div>
+    <div class="card"><div class="sec-titulo-rep">📅 Plan de acción priorizado</div><div id="rep-plan"></div></div>
+    <div class="card" style="background:#FFF7ED;border-color:#FED7AA"><div class="sec-titulo-rep" style="color:#92400E">⚠️ Riesgo de sanción STPS</div><p style="font-size:13px;color:#78350F;line-height:1.6" id="rep-multa">—</p></div>
+    <div class="card"><div class="sec-titulo-rep">Conclusión</div><p style="font-size:13px;color:#334155;line-height:1.7" id="rep-conclusion">—</p></div>
+    <div class="cta-box no-print">
+      <div style="font-size:15px;font-weight:600;color:#fff;margin-bottom:6px">¿Necesitas apoyo para implementar estas acciones?</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.65);margin-bottom:14px;line-height:1.5">MGV Consultoría e Ingeniería te acompaña en la implementación completa de la NOM-035</div>
+      <a class="cta-btn" href="https://consultoria-mgv.github.io/consultoria-mgv/" target="_blank">Contactar a MGV Consultoría →</a>
+    </div>
+    <div class="rep-btns no-print">
+      <button style="background:#fff;border:1px solid #E2E8F0;color:#64748B" onclick="reiniciar()">Nueva auditoría</button>
+      <button style="background:#0F2D5C;color:#fff" onclick="window.print()">Imprimir / Guardar PDF</button>
+    </div>
+    <div style="text-align:center;font-size:11px;color:#94A3B8;padding-bottom:30px">MGV Consultoría e Ingeniería · consultoria-mgv.github.io/consultoria-mgv</div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+//  ▼▼▼  COLOCA AQUÍ TU API KEY DE GROQ  ▼▼▼
+//  Obtén la tuya GRATIS en: console.groq.com → API Keys
+// ══════════════════════════════════════════════════════════════
+const GROQ_API_KEY = "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";
+// ══════════════════════════════════════════════════════════════
+
+const SECCIONES=[
+  {id:"empresa",titulo:"Datos de la empresa",icono:"🏭",preguntas:[
+    {id:"nombre",texto:"Nombre o razón social de la empresa",tipo:"text",placeholder:"Ej. Industrias Acero del Norte S.A. de C.V."},
+    {id:"giro",texto:"Giro o actividad principal",tipo:"select",opciones:["Manufactura / Industria","Construcción","Logística / Transporte","Servicios / Oficinas","Comercio / Retail","Alimenticio / Agroindustrial","Químico / Farmacéutico","Minería / Extracción","Otro"]},
+    {id:"trabajadores",texto:"Número total de trabajadores",tipo:"select",opciones:["15 – 50","51 – 100","101 – 300","301 – 500","Más de 500"]},
+    {id:"centros",texto:"Número de centros de trabajo",tipo:"select",opciones:["1","2 – 5","6 – 10","Más de 10"]},
+  ]},
+  {id:"politica",titulo:"Política de prevención",icono:"📋",preguntas:[
+    {id:"p1",texto:"¿La empresa cuenta con una política de prevención de riesgos psicosociales documentada?",tipo:"radio",opciones:["Sí, está documentada y vigente","Sí, pero está desactualizada","Está en elaboración","No existe"]},
+    {id:"p2",texto:"¿La política está firmada por el representante legal o máxima autoridad?",tipo:"radio",opciones:["Sí","No","No aplica / No tenemos política"]},
+    {id:"p3",texto:"¿La política ha sido difundida entre todos los trabajadores?",tipo:"radio",opciones:["Sí, con evidencia documental","Sí, pero sin evidencia","Parcialmente","No"]},
+    {id:"p4",texto:"¿Se revisa o actualiza la política periódicamente?",tipo:"radio",opciones:["Sí, al menos una vez al año","Solo cuando ocurre un evento","Nunca se ha revisado","No existe política"]},
+  ]},
+  {id:"identificacion",titulo:"Identificación de factores de riesgo",icono:"🔍",preguntas:[
+    {id:"i1",texto:"¿Se ha aplicado el instrumento oficial NOM-035 para identificar factores de riesgo psicosocial?",tipo:"radio",opciones:["Sí, con los instrumentos oficiales","Sí, con instrumentos propios o de terceros","Está planeado pero no ejecutado","No se ha aplicado"]},
+    {id:"i2",texto:"¿Con qué frecuencia se aplica la identificación?",tipo:"radio",opciones:["Anualmente","Cada 2 años","Solo se hizo una vez","Nunca se ha aplicado"]},
+    {id:"i3",texto:"¿Los resultados han sido analizados por área, puesto y turno?",tipo:"radio",opciones:["Sí, con análisis documentado","Análisis parcial","Solo se tienen los datos crudos","No hay análisis"]},
+    {id:"i4",texto:"¿Se identifican y registran los Acontecimientos Traumáticos Severos (ATS)?",tipo:"radio",opciones:["Sí, existe un procedimiento formal","Se registran informalmente","No existe procedimiento","No sabemos qué son los ATS"]},
+  ]},
+  {id:"medidas",titulo:"Medidas de prevención y control",icono:"🛡️",preguntas:[
+    {id:"m1",texto:"¿Se han implementado medidas para los factores de riesgo identificados?",tipo:"radio",opciones:["Sí, para todos los factores","Solo para algunos factores","Planeadas pero no implementadas","No se han implementado"]},
+    {id:"m2",texto:"¿Existe un programa de intervención con responsables y fechas?",tipo:"radio",opciones:["Sí, con responsables y fechas","En borrador sin formalizar","No existe"]},
+    {id:"m3",texto:"¿Se realizan acciones de promoción de entorno organizacional favorable?",tipo:"radio",opciones:["Sí, regularmente con evidencia","Ocasionalmente","No se realizan"]},
+    {id:"m4",texto:"¿Existen canales de atención para trabajadores con violencia laboral o estrés severo?",tipo:"radio",opciones:["Sí, formales y conocidos por todos","Existen pero no son conocidos","No existen"]},
+  ]},
+  {id:"difusion",titulo:"Difusión y capacitación",icono:"📢",preguntas:[
+    {id:"d1",texto:"¿Se capacita a los trabajadores sobre factores de riesgo psicosocial?",tipo:"radio",opciones:["Sí, regularmente con constancias DC-3","Sí, pero sin evidencia documental","Solo en inducción","No se realiza capacitación"]},
+    {id:"d2",texto:"¿Los mandos medios y supervisores han sido capacitados?",tipo:"radio",opciones:["Sí, todos","Solo algunos","No han sido capacitados"]},
+    {id:"d3",texto:"¿Se cuenta con evidencia documental de todas las actividades?",tipo:"radio",opciones:["Sí, expediente completo y organizado","Evidencia parcial","Muy poca evidencia","Sin evidencia"]},
+  ]},
+  {id:"vigilancia",titulo:"Vigilancia a la salud",icono:"🏥",preguntas:[
+    {id:"v1",texto:"¿Se realizan exámenes médicos para detectar alteraciones relacionadas con riesgo psicosocial?",tipo:"radio",opciones:["Sí, como parte del programa médico","Exámenes generales sin enfoque psicosocial","No se realizan"]},
+    {id:"v2",texto:"¿Existe médico del trabajo o servicio de salud ocupacional?",tipo:"radio",opciones:["Sí, médico de planta","Servicio médico contratado","Solo el IMSS","No existe servicio médico"]},
+    {id:"v3",texto:"¿Se da seguimiento a trabajadores con afectaciones a la salud?",tipo:"radio",opciones:["Sí, con expediente y seguimiento formal","Seguimiento informal","No se da seguimiento"]},
+  ]},
+];
+
+const SCORES={p1:{"Sí, está documentada y vigente":100,"Sí, pero está desactualizada":50,"Está en elaboración":25,"No existe":0},p2:{"Sí":100,"No":0,"No aplica / No tenemos política":0},p3:{"Sí, con evidencia documental":100,"Sí, pero sin evidencia":60,"Parcialmente":30,"No":0},p4:{"Sí, al menos una vez al año":100,"Solo cuando ocurre un evento":40,"Nunca se ha revisado":10,"No existe política":0},i1:{"Sí, con los instrumentos oficiales":100,"Sí, con instrumentos propios o de terceros":60,"Está planeado pero no ejecutado":20,"No se ha aplicado":0},i2:{"Anualmente":100,"Cada 2 años":70,"Solo se hizo una vez":40,"Nunca se ha aplicado":0},i3:{"Sí, con análisis documentado":100,"Análisis parcial":50,"Solo se tienen los datos crudos":20,"No hay análisis":0},i4:{"Sí, existe un procedimiento formal":100,"Se registran informalmente":50,"No existe procedimiento":0,"No sabemos qué son los ATS":0},m1:{"Sí, para todos los factores":100,"Solo para algunos factores":50,"Planeadas pero no implementadas":20,"No se han implementado":0},m2:{"Sí, con responsables y fechas":100,"En borrador sin formalizar":40,"No existe":0},m3:{"Sí, regularmente con evidencia":100,"Ocasionalmente":50,"No se realizan":0},m4:{"Sí, formales y conocidos por todos":100,"Existen pero no son conocidos":40,"No existen":0},d1:{"Sí, regularmente con constancias DC-3":100,"Sí, pero sin evidencia documental":60,"Solo en inducción":30,"No se realiza capacitación":0},d2:{"Sí, todos":100,"Solo algunos":50,"No han sido capacitados":0},d3:{"Sí, expediente completo y organizado":100,"Evidencia parcial":50,"Muy poca evidencia":20,"Sin evidencia":0},v1:{"Sí, como parte del programa médico":100,"Exámenes generales sin enfoque psicosocial":50,"No se realizan":0},v2:{"Sí, médico de planta":100,"Servicio médico contratado":80,"Solo el IMSS":40,"No existe servicio médico":0},v3:{"Sí, con expediente y seguimiento formal":100,"Seguimiento informal":40,"No se da seguimiento":0}};
+
+let paso=0,resp={};
+
+// Verificar que la key esté configurada
+window.addEventListener("load",()=>{
+  if(!GROQ_API_KEY||GROQ_API_KEY==="PEGA_TU_KEY_AQUI"){
+    document.body.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:30px;background:#F8FAFC"><div style="max-width:460px;background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:28px 24px;text-align:center"><div style="font-size:32px;margin-bottom:12px">⚙️</div><div style="font-size:18px;font-weight:600;color:#0F2D5C;margin-bottom:10px">Configuración pendiente</div><div style="font-size:13px;color:#64748B;line-height:1.7;margin-bottom:16px">Para activar la herramienta, abre el archivo HTML y reemplaza <code style="background:#F1F5F9;padding:2px 6px;border-radius:4px">PEGA_TU_KEY_AQUI</code> con tu API key de Groq (gratis en <strong>console.groq.com</strong>).</div></div></div>`;
+    return;
+  }
+  mostrarPantalla("inicio");
+  construirSecList();
+});
+
+function construirSecList(){
+  document.getElementById("sec-list").innerHTML=SECCIONES.slice(1).map(s=>`<div class="sec-list-item"><span>${s.icono}</span><span style="font-size:13px;color:#334155">${s.titulo}</span><span class="cnt">${s.preguntas.length} preguntas</span></div>`).join("");
+}
+
+function mostrarPantalla(id){
+  ["inicio","preguntas","procesando","reporte"].forEach(s=>document.getElementById("screen-"+s).classList.toggle("hidden",s!==id));
+}
+
+function irAPaso(n){
+  paso=n;
+  renderPaso();
+  mostrarPantalla("preguntas");
+  window.scrollTo(0,0);
+}
+
+function siguiente(){
+  if(paso===SECCIONES.length){generarReporte();return;}
+  irAPaso(paso+1);
+}
+
+function anterior(){
+  if(paso<=1){mostrarPantalla("inicio");return;}
+  irAPaso(paso-1);
+}
+
+function renderPaso(){
+  const sec=SECCIONES[paso-1];
+  const esDatos=sec.id==="empresa";
+  document.getElementById("prog-secs").innerHTML=SECCIONES.map((_,i)=>`<div class="prog-sec ${i+1<paso?'done':i+1===paso?'active':''}"></div>`).join("");
+  document.getElementById("prog-label-sec").textContent=`Sección ${paso} de ${SECCIONES.length}`;
+  const tot=SECCIONES.slice(1).reduce((a,s)=>a+s.preguntas.length,0);
+  const res=Object.keys(resp).filter(k=>!["nombre","giro","trabajadores","centros"].includes(k)).length;
+  document.getElementById("prog-label-pct").textContent=esDatos?"":Math.round(res/tot*100)+"% completado";
+  document.getElementById("prog-icon").textContent=sec.icono;
+  document.getElementById("prog-titulo-texto").textContent=sec.titulo;
+  document.getElementById("prog-pregs-cnt").textContent=sec.preguntas.length+" preguntas";
+  document.getElementById("preguntas-container").innerHTML=sec.preguntas.map((p,i)=>{
+    let inp="";
+    if(p.tipo==="text") inp=`<input class="preg-input" type="text" placeholder="${p.placeholder||''}" value="${resp[p.id]||''}" oninput="guardar('${p.id}',this.value)">`;
+    else if(p.tipo==="select") inp=`<select class="preg-select" onchange="guardar('${p.id}',this.value)"><option value="">Seleccionar...</option>${p.opciones.map(o=>`<option value="${o}" ${resp[p.id]===o?"selected":""}>${o}</option>`).join("")}</select>`;
+    else inp=p.opciones.map(op=>`<div class="radio-opt ${resp[p.id]===op?'sel':''}" onclick="selRadio('${p.id}','${op.replace(/'/g,"\\'")}',this)"><div class="radio-dot"><div class="radio-inner"></div></div><span class="radio-label">${op}</span></div>`).join("");
+    return `<div class="preg-card"><div class="preg-texto"><span class="preg-num">${i+1}.</span>${p.texto}</div>${inp}</div>`;
+  }).join("");
+  document.getElementById("btn-anterior").style.display=paso>1?"block":"none";
+  checkCompleta();
+}
+
+function guardar(id,val){resp[id]=val;checkCompleta();}
+
+function selRadio(id,val,el){
+  resp[id]=val;
+  el.closest(".preg-card").querySelectorAll(".radio-opt").forEach(o=>o.classList.remove("sel"));
+  el.classList.add("sel");
+  checkCompleta();
+}
+
+function checkCompleta(){
+  const sec=SECCIONES[paso-1];if(!sec)return;
+  const ok=sec.preguntas.every(p=>resp[p.id]&&resp[p.id]!=="");
+  const btn=document.getElementById("btn-siguiente");
+  btn.disabled=!ok;
+  btn.textContent=paso===SECCIONES.length?"Generar reporte con IA →":"Continuar: "+(SECCIONES[paso]?.titulo||"Siguiente")+" →";
+}
+
+function calcular(){
+  const secs=SECCIONES.slice(1).map(sec=>{
+    const total=sec.preguntas.reduce((a,p)=>a+(resp[p.id]?SCORES[p.id]?.[resp[p.id]]??0:0),0);
+    return{id:sec.id,titulo:sec.titulo,icono:sec.icono,score:Math.round(total/sec.preguntas.length)};
+  });
+  return{secciones:secs,scoreGlobal:Math.round(secs.reduce((a,s)=>a+s.score,0)/secs.length)};
+}
+
+function nivelRiesgo(s){
+  if(s>=80)return{label:"Cumplimiento alto",color:"#0B6B3A",bg:"#E6F5ED",emoji:"✅"};
+  if(s>=60)return{label:"Cumplimiento medio",color:"#B45309",bg:"#FEF3C7",emoji:"⚠️"};
+  if(s>=35)return{label:"Riesgo de incumplimiento",color:"#C05621",bg:"#FFF7ED",emoji:"🔶"};
+  return{label:"Incumplimiento crítico",color:"#991B1B",bg:"#FEE2E2",emoji:"🚨"};
+}
+
+const PROC_PASOS=["Analizando respuestas de la auditoría…","Identificando hallazgos y brechas normativas…","Calculando nivel de riesgo de sanción STPS…","Generando plan de acción personalizado…","Redactando conclusiones y recomendaciones…"];
+
+async function generarReporte(){
+  mostrarPantalla("procesando");window.scrollTo(0,0);
+  const resultados=calcular();
+  const stepsEl=document.getElementById("proc-steps");
+  stepsEl.innerHTML=PROC_PASOS.map((p,i)=>`<div class="proc-step pending" id="ps-${i}">${p}</div>`).join("");
+  let idx=0;
+  const t=setInterval(()=>{
+    if(idx>0)document.getElementById("ps-"+(idx-1)).className="proc-step done";
+    if(idx<PROC_PASOS.length){document.getElementById("ps-"+idx).className="proc-step active";document.getElementById("proc-sub").textContent=PROC_PASOS[idx];idx++;}
+    else clearInterval(t);
+  },900);
+
+  const prompt=`Eres auditor experto en NOM-035-STPS-2018. Genera un reporte de auditoría profesional en español para: ${resp.nombre||"empresa auditada"} (Giro: ${resp.giro||"industria"}, Trabajadores: ${resp.trabajadores||"no especificado"}).
+
+SCORES: ${resultados.secciones.map(s=>`${s.titulo}: ${s.score}/100`).join(" | ")} | GLOBAL: ${resultados.scoreGlobal}/100
+
+RESPUESTAS: ${SECCIONES.slice(1).map(sec=>sec.preguntas.map(p=>`[${sec.titulo}] ${p.texto}: ${resp[p.id]||'Sin respuesta'}`).join(' | ')).join(' | ')}
+
+Responde ÚNICAMENTE con JSON válido sin markdown:
+{"resumen_ejecutivo":"3 oraciones sobre el estado de cumplimiento","hallazgos_criticos":["h1","h2","h3"],"fortalezas":["f1","f2"],"plan_accion":[{"prioridad":"INMEDIATA","accion":"...","plazo":"0-30 días","responsable":"..."},{"prioridad":"CORTO PLAZO","accion":"...","plazo":"1-3 meses","responsable":"..."},{"prioridad":"MEDIANO PLAZO","accion":"...","plazo":"3-6 meses","responsable":"..."}],"riesgo_multa":"descripción con monto","conclusion":"recomendación principal"}`;
+
+  let analisis={};
+  try{
+    const r=await fetch("https://api.groq.com/openai/v1/chat/completions",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+GROQ_API_KEY},body:JSON.stringify({model:"llama-3.3-70b-versatile",max_tokens:1024,temperature:0.4,messages:[{role:"user",content:prompt}]})});
+    const d=await r.json();
+    if(d.error)throw new Error(d.error.message);
+    analisis=JSON.parse((d.choices?.[0]?.message?.content||"{}").replace(/```json|```/g,"").trim());
+  }catch(e){
+    console.error(e);
+    analisis={resumen_ejecutivo:`La empresa presenta un nivel de cumplimiento del ${resultados.scoreGlobal}% respecto a la NOM-035-STPS-2018. Se identificaron brechas que requieren atención inmediata para evitar sanciones de la STPS.`,hallazgos_criticos:["Documentación de política de prevención incompleta","Falta de aplicación del instrumento oficial de identificación","Evidencia documental insuficiente para inspección"],fortalezas:["Disposición para iniciar el cumplimiento normativo","Estructura organizacional que facilita la implementación"],plan_accion:[{prioridad:"INMEDIATA",accion:"Elaborar y formalizar la política de prevención con firma del representante legal",plazo:"0-30 días",responsable:"Dirección / RRHH"},{prioridad:"CORTO PLAZO",accion:"Aplicar instrumento oficial de identificación de factores de riesgo psicosocial",plazo:"1-3 meses",responsable:"SHMA"},{prioridad:"MEDIANO PLAZO",accion:"Implementar programa de capacitación con constancias DC-3",plazo:"3-6 meses",responsable:"RRHH / SHMA"}],riesgo_multa:"Riesgo de multa hasta $480,000 MXN por centro de trabajo ante una inspección STPS.",conclusion:"Se recomienda iniciar de inmediato la documentación de la política de prevención. MGV Consultoría puede acompañarte en el proceso completo."};
+  }
+  clearInterval(t);
+  renderReporte(resultados,analisis);
+  mostrarPantalla("reporte");
+  window.scrollTo(0,0);
+}
+
+function renderReporte(res,analisis){
+  const{secciones,scoreGlobal}=res;
+  const nv=nivelRiesgo(scoreGlobal);
+  document.getElementById("rep-empresa").textContent=resp.nombre||"Empresa auditada";
+  document.getElementById("rep-fecha").textContent=new Date().toLocaleDateString("es-MX",{year:"numeric",month:"long",day:"numeric"})+" · MGV Consultoría con IA";
+  const sn=document.getElementById("rep-score-num");
+  sn.innerHTML=scoreGlobal+`<span style="font-size:22px;color:#94A3B8">%</span>`;sn.style.color=nv.color;
+  const badge=document.getElementById("rep-nivel-badge");badge.textContent=nv.emoji+" "+nv.label;badge.style.background=nv.bg;badge.style.color=nv.color;
+  const bg=document.getElementById("rep-barra-global");bg.style.width=scoreGlobal+"%";bg.style.background=nv.color;
+  document.getElementById("rep-secciones").innerHTML=secciones.map(s=>{const n=nivelRiesgo(s.score);return`<div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:13px;color:#334155">${s.icono} ${s.titulo}</span><span style="font-size:13px;font-weight:600;color:${n.color}">${s.score}%</span></div><div class="barra-wrap"><div class="barra-fill" style="width:${s.score}%;background:${n.color}"></div></div></div>`;}).join("");
+  document.getElementById("rep-resumen").textContent=analisis.resumen_ejecutivo||"";
+  const hall=analisis.hallazgos_criticos||[];
+  document.getElementById("rep-hallazgos-card").style.display=hall.length?"":"none";
+  document.getElementById("rep-hallazgos").innerHTML=hall.map(h=>`<div class="hallazgo"><span style="flex-shrink:0;font-weight:700">✗</span><span>${h}</span></div>`).join("");
+  const fort=analisis.fortalezas||[];
+  document.getElementById("rep-fortalezas-card").style.display=fort.length?"":"none";
+  document.getElementById("rep-fortalezas").innerHTML=fort.map(f=>`<div class="fortaleza"><span style="flex-shrink:0">✓</span><span>${f}</span></div>`).join("");
+  const pc={INMEDIATA:["#991B1B","#FEE2E2"],"CORTO PLAZO":["#B45309","#FEF3C7"],"MEDIANO PLAZO":["#0B6B3A","#E6F5ED"]};
+  document.getElementById("rep-plan").innerHTML=(analisis.plan_accion||[]).map(item=>{const[c,bg]=pc[item.prioridad]||["#0F2D5C","#E8F0FB"];return`<div class="accion-item"><div style="display:flex;gap:7px;align-items:center;margin-bottom:6px"><span class="prio-badge" style="background:${bg};color:${c}">${item.prioridad}</span><span style="font-size:11px;color:#64748B">· ${item.plazo}</span></div><div style="font-size:13px;color:#334155;line-height:1.5;margin-bottom:3px">${item.accion}</div><div style="font-size:11px;color:#64748B">Responsable: ${item.responsable}</div></div>`;}).join("");
+  document.getElementById("rep-multa").textContent=analisis.riesgo_multa||"";
+  document.getElementById("rep-conclusion").textContent=analisis.conclusion||"";
+}
+
+function reiniciar(){resp={};paso=0;mostrarPantalla("inicio");window.scrollTo(0,0);}
+</script>
+</body>
+</html>
