@@ -282,6 +282,29 @@ footer{
 }
 .fb:hover .fb-tooltip{opacity:1}
 
+/* ═══════════════════════════ GALERÍA CAPACITACIÓN ═══════════════════════════ */
+.galeria{background:var(--wh)}
+.gal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:52px}
+.gal-card{
+  border-radius:14px;overflow:hidden;border:1px solid var(--bd);
+  background:var(--cr);transition:transform .25s,box-shadow .25s,border-color .25s;
+}
+.gal-card:hover{transform:translateY(-6px);box-shadow:0 18px 44px rgba(14,158,110,.13);border-color:var(--tl)}
+.gal-img{position:relative;height:220px;overflow:hidden;background:var(--dk2)}
+.gal-img img{width:100%;height:100%;object-fit:cover;transition:transform .45s;display:block}
+.gal-card:hover .gal-img img{transform:scale(1.06)}
+.gal-tag{
+  position:absolute;top:12px;left:12px;
+  background:rgba(6,28,46,.82);color:var(--tl3);
+  font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;
+  padding:5px 11px;border-radius:6px;backdrop-filter:blur(4px);
+}
+.gal-body{padding:20px 22px 26px}
+.gal-body h3{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--dk);margin-bottom:7px;line-height:1.3}
+.gal-body p{font-size:14px;color:var(--mt);line-height:1.65}
+@media(max-width:900px){.gal-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.gal-grid{grid-template-columns:1fr}}
+
 /* ═══════════════════════════ ANIMATIONS ═══════════════════════════ */
 .fade{opacity:0;transform:translateY(28px);transition:opacity .65s,transform .65s}
 .fade.in{opacity:1;transform:translateY(0)}
@@ -483,6 +506,87 @@ footer{
     </div>
   </div>
 </section>
+
+<!-- ══════════ GALERÍA CAPACITACIÓN ══════════ -->
+<section class="galeria" id="capacitacion">
+  <div class="s-inner">
+    <div class="s-center fade">
+      <span class="s-tag">Capacitación en acción</span>
+      <h2 class="s-title">Formando culturas de seguridad real</h2>
+      <p class="s-desc">Entrenamiento práctico en seguridad, higiene industrial y medio ambiente para que su equipo actúe cuando cada segundo cuenta.</p>
+    </div>
+    <div class="gal-grid">
+
+      <div class="gal-card fade fade-d1">
+        <div class="gal-img">
+          <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=600&h=440&q=80" alt="Capacitación en seguridad industrial" loading="lazy">
+          <span class="gal-tag">Seguridad</span>
+        </div>
+        <div class="gal-body">
+          <h3>Capacitación en Seguridad Industrial</h3>
+          <p>Talleres prácticos adaptados a las normas STPS y al sector productivo de su empresa.</p>
+        </div>
+      </div>
+
+      <div class="gal-card fade fade-d2">
+        <div class="gal-img">
+          <img src="https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&fit=crop&w=600&h=440&q=80" alt="Uso y manejo de extintores" loading="lazy">
+          <span class="gal-tag">Prevención de Incendios</span>
+        </div>
+        <div class="gal-body">
+          <h3>Uso y Manejo de Extintores</h3>
+          <p>Entrenamiento presencial para que su personal actúe con rapidez y confianza ante un conato de incendio.</p>
+        </div>
+      </div>
+
+      <div class="gal-card fade fade-d3">
+        <div class="gal-img">
+          <img src="https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&w=600&h=440&q=80" alt="Equipos de protección personal EPP" loading="lazy">
+          <span class="gal-tag">EPP</span>
+        </div>
+        <div class="gal-body">
+          <h3>Equipos de Protección Personal</h3>
+          <p>Selección, uso correcto y mantenimiento de EPP de acuerdo con los riesgos específicos de cada puesto.</p>
+        </div>
+      </div>
+
+      <div class="gal-card fade fade-d1">
+        <div class="gal-img">
+          <img src="https://images.unsplash.com/photo-1582281298055-e25b84a30b0b?auto=format&fit=crop&w=600&h=440&q=80" alt="Brigadas de emergencia" loading="lazy">
+          <span class="gal-tag">Brigadas</span>
+        </div>
+        <div class="gal-body">
+          <h3>Formación de Brigadas de Emergencia</h3>
+          <p>Conformación y entrenamiento de brigadas de evacuación, primeros auxilios y combate de incendios.</p>
+        </div>
+      </div>
+
+      <div class="gal-card fade fade-d2">
+        <div class="gal-img">
+          <img src="https://images.unsplash.com/photo-1576086212093-dd54e26e7e54?auto=format&fit=crop&w=600&h=440&q=80" alt="Higiene industrial y salud laboral" loading="lazy">
+          <span class="gal-tag">Higiene Industrial</span>
+        </div>
+        <div class="gal-body">
+          <h3>Higiene Industrial y Salud Laboral</h3>
+          <p>Evaluación y control de agentes químicos, físicos y biológicos que ponen en riesgo la salud del trabajador.</p>
+        </div>
+      </div>
+
+      <div class="gal-card fade fade-d3">
+        <div class="gal-img">
+          <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=600&h=440&q=80" alt="Gestión ambiental y residuos peligrosos" loading="lazy">
+          <span class="gal-tag">Medio Ambiente</span>
+        </div>
+        <div class="gal-body">
+          <h3>Gestión Ambiental y Residuos Peligrosos</h3>
+          <p>Capacitación en manejo, almacenamiento y disposición de residuos peligrosos conforme a SEMARNAT.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+<hr class="s-rule">
 
 <!-- ══════════ POR QUÉ MGV ══════════ -->
 <section class="porq" id="porq">
